@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class UserNotFoundExceptin extends RuntimeException {
+public class UserNotFoundException extends RuntimeException {
 
 	/**
 	 * @param message
 	 */
-	public UserNotFoundExceptin(String message) {
+	public UserNotFoundException(String message) {
 		super(message);
 	}
 }
