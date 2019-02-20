@@ -2,18 +2,18 @@
  * 
  */
 package com.in28minutes.rest.webservices.user.controller;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
-
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.in28minutes.rest.webservices.user.dao.UserDaoService;
+import com.in28minutes.rest.webservices.user.dao.PostRepository;
+import com.in28minutes.rest.webservices.user.dao.UserRepository;
 import com.in28minutes.rest.webservices.user.exception.UserNotFoundException;
+import com.in28minutes.rest.webservices.user.model.Post;
 import com.in28minutes.rest.webservices.user.model.User;
 
 /**
@@ -32,45 +34,66 @@ import com.in28minutes.rest.webservices.user.model.User;
  *
  */
 @RestController
-public class UserController {
+public class UserJPAResource {
 
 	@Autowired
-	private UserDaoService userDaoService;
+	private UserRepository userRepository;
+	
+	@Autowired
+	private PostRepository postRepository;
 
-
-	@GetMapping("/users")
+	@GetMapping("/jpa/users")
 	public List<User> retrieveAllUsers(){
-		return userDaoService.findAll();
+		return userRepository.findAll();
 	}
 
-	@GetMapping("/users/{id}")
+	@GetMapping("/jpa/users/{id}")
 	public Resource<User> retrieveUser(@PathVariable int id){
-		User foundOne = userDaoService.findOne(id);
-		if(foundOne==null)
+		Optional<User> user = userRepository.findById(id);
+		if(!user.isPresent())
 			throw new UserNotFoundException("id-"+id);
 		// "all-users", SERVER_PATH + "/users"
 		//retrieveAllUsers
-		Resource<User> resource = new Resource<User>(foundOne);
+		Resource<User> resource = new Resource<User>(user.get());
 		ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
 		resource.add(linkTo.withRel("all-users"));
 		return resource;
 	}
 
-	@DeleteMapping("/users/{id}")
+	@DeleteMapping("/jpa/users/{id}")
 	public void deleteUser(@PathVariable int id){
-		User deletedOne = userDaoService.deleteById(id);
-		if(deletedOne==null)
-			throw new UserNotFoundException("id-"+id);
+		userRepository.deleteById(id);		
 	}
 
 
-	@PostMapping("/users")
+	@PostMapping("/jpa/users")
 	public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
 		//public User createUser(@RequestBody User user){
-		User userSaved = userDaoService.save(user);
+		User userSaved = userRepository.save(user);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userSaved.getId()).toUri();
 		//return userSaved;
 		return ResponseEntity.created(location).build();
 	}
+	
+	
+	@GetMapping("/jpa/users/{id}/posts")
+	public List<Post> retrieveAllPosts(@PathVariable int id){
+		Optional<User> userOptional = userRepository.findById(id);
+		if(!userOptional.isPresent())
+			throw new UserNotFoundException("id-"+id);
+		return userOptional.get().getPosts();
+	}
+
+	@PostMapping("/jpa/users/{id}/posts")
+	public ResponseEntity<Object> createPost(@PathVariable int id, @RequestBody Post post){
+		Optional<User> userOptional = userRepository.findById(id);
+		if(!userOptional.isPresent())
+			throw new UserNotFoundException("id-"+id);
+		User user = userOptional.get();
+		post.setUser(user);
+		postRepository.save(post);
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(post.getId()).toUri();
+		return ResponseEntity.created(location).build();	}
+	
 
 }

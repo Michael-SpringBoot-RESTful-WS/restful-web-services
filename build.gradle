@@ -25,6 +25,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.data:spring-data-rest-hal-browser'
 	
+	// For adding basic authentication service. Default user name is 'user'
+	// And the password will be generated and printed in console every time with label given below
+	// 'Using default security password : password'
+	//implementation 'org.springframework.boot:spring-boot-starter-security'
+	
+	
 	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

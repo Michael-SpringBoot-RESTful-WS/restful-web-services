@@ -28,7 +28,7 @@ public class UserDaoService {
 		users.add(new User(3,"Raj",new Date()));
 	}
 
-	public List<User> finadAll(){
+	public List<User> findAll(){
 		return users;
 	}
 

@@ -1,0 +1,43 @@
+Richardson Maturity Model
+Level 0
+-------
+Expose Soap Web Services in REST Style
+-> http://server/getPosts
+-> http://server/deletePosts
+-> http://server/doThis
+
+Level 1
+-------
+Exposing Resources with proper URI
+-> http://server/accounts
+-> http://server/accounts/10
+
+Note: Improper use of HTTP methods
+
+Level 2
+-------
+Level 1 with proper use of HTTP methods
+
+Level 3
+-------
+Level 2 + HATEOAS -> It means returning data + next possible actions as the response
+
+-------------------------------------------------------------------------------------------------------------------------
+Best Practices in RESTful WS design
+-> Think always Consumer first - make the proper and simple URIs to access the resources
+-> Document your resources very well via Swagger
+-> Make best use of HTTP
+-> Make the best use of the request methods like GET, POST, PUT and DELETE
+-> Ensure application sends back the proper response status codes as follows
+200 - Success
+201 - Created
+400 - Bad Request
+401 - Unauthorized
+403 - Forbidden
+404 - Resource Not Found
+500 - Internal Server Error
+-> Ensure that there is no secure information sent on URI like security token
+-> Always use plurals as follows
+ 1. Prefer /users to /user
+ 2. Prefer /users/1 to /user/1
+-> Use nouns for naming the resources as much as possible

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.in28minutes.rest.webservices.configuration;
+package com.in28minutes.rest.webservices.swagger.configuration;
 
 import java.util.Arrays;
 import java.util.HashSet;
