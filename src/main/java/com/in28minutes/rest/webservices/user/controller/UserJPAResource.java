@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,6 +60,15 @@ public class UserJPAResource {
 		resource.add(linkTo.withRel("all-users"));
 		return resource;
 	}
+	
+	@GetMapping("/jpa/users-re/{id}")
+	public ResponseEntity<User> retrieveUserByResponseEntity(@PathVariable int id){
+		Optional<User> user = userRepository.findById(id);
+		if(!user.isPresent())
+			throw new UserNotFoundException("id-"+id);
+		return new ResponseEntity(user.get(), HttpStatus.OK);
+	}
+	
 
 	@DeleteMapping("/jpa/users/{id}")
 	public void deleteUser(@PathVariable int id){
